@@ -41,6 +41,7 @@ const Link = () => {
   const {loading, data:url, fn, error} = useFetch(getUrl, {id, user_id:user?.id});
 
   const {loading:loadingStats, data:stats, fn:fnStats} = useFetch(getClicksForUrl, id);
+  // console.log(stats);
   const {loading:loadingDelete,  fn:fnDelete} = useFetch(deleteUrl, id);
 
   useEffect(()=>{
