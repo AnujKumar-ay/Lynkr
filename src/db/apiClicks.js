@@ -15,36 +15,33 @@ export async function getClicksForUrls(urlIds) {
 // import supabase from "./supabase";
 
 export const storeClicks = async ({ id }) => {
-  try {
-    const parser = new UAParser();
-    const device = parser.getResult().device.type || "desktop";
+  const parser = new UAParser();
+  const device = parser.getResult().device.type || "desktop";
 
-    // Fetch geolocation from frontend
+  try {
+    // Wait for geolocation data
     const response = await fetch("https://ipapi.co/json", { keepalive: true });
     const data = await response.json();
-    
+
     const city = data.city || "unknown";
     const country = data.country_name || "unknown";
 
-    // Insert click into Supabase
-    const { data: clickData, error } = await supabase.from("clicks").insert({
-      url_id: id,
-      city,
-      country,
-      device,
-    }).select();
+    // Wait for click insert
+    const { data: clickData, error } = await supabase
+      .from("clicks")
+      .insert([{ url_id: id, city, country, device }])
+      .select();
 
-    if (error) {
-      console.error("Error inserting click:", error);
-      throw error;
-    }
+    if (error) throw error;
 
+    console.log("Click inserted:", clickData);
     return clickData;
   } catch (error) {
     console.error("Error recording click:", error);
-    throw error;
+    return null;
   }
 };
+
 
 
 export async function getClicksForUrl(url_id) {
