@@ -20,10 +20,10 @@ const RedirectLink = () => {
   useEffect(() => {
     const handleRedirect = async () => {
       if (!loading && data) {
-        console.log("Starting click store...");
+        // console.log("Starting click store...");
         // Wait for clicks to store before redirecting
         await storeClicks({ id: data.id });
-        console.log("Click stored successfully!");
+        // console.log("Click stored successfully!");
         window.location.href = data.original_url; // redirect after DB insert
       }
     };
