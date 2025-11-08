@@ -14,54 +14,44 @@ export async function getClicksForUrls(urlIds) {
 // import { UAParser } from "ua-parser-js";
 // import supabase from "./supabase";
 
-export const storeClicks = async ({ id }) => {
-  const parser = new UAParser();
-  const device = parser.getResult().device.type || "desktop";
-
+export const storeClicks = ({ id }) => {
   try {
-    // Wait for geolocation data
-    const response = await fetch("https://ipapi.co/json", { keepalive: true });
-    const data = await response.json();
+    const parser = new UAParser();
+    const device = parser.getResult().device.type || "desktop";
 
-    const city = data.city || "unknown";
-    const country = data.country_name || "unknown";
+    // Fetch geolocation from frontend asynchronously
+    fetch("https://ipapi.co/json", { keepalive: true })
+      .then(res => res.json())
+      .then(async (data) => {
+        const city = data.city || "unknown";
+        const country = data.country_name || "unknown";
 
-    // Wait for click insert
-    const { data: clickData, error } = await supabase
-      .from("clicks")
-      .insert([{ url_id: id, city, country, device }])
-      .select();
+        // Insert click into Supabase asynchronously
+        await supabase.from("clicks").insert({
+          url_id: id,
+          city,
+          country,
+          device,
+        });
+      })
+      .catch(err => console.error("Error fetching geolocation:", err));
 
-    if (error) throw error;
-
-    console.log("Click inserted:", clickData);
-    return clickData;
   } catch (error) {
     console.error("Error recording click:", error);
-    return null;
   }
 };
 
 
-
 export async function getClicksForUrl(url_id) {
-  console.log("Fetching clicks for URL ID:", url_id);
-  
   const { data, error } = await supabase
       .from("clicks")
       .select("*")
       .eq("url_id", url_id);
-  
-  if (error) {
-    console.error("Database error:", error.message);
+
+
+  if (error){
+    console.error(error.message)
     throw new Error("Unable to load Stats");
   }
-  
-  console.log("Retrieved clicks data:", data);
-  
-  if (!data || data.length === 0) {
-    console.log("No clicks found for this URL");
-  }
-  
   return data;
 }

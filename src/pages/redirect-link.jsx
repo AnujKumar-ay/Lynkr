@@ -1,4 +1,3 @@
-// RedirectLink.jsx
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import useFetch from '../hooks/use-fetch';
@@ -12,23 +11,19 @@ const RedirectLink = () => {
 
   useEffect(() => {
     const redirect = async () => {
-      await fn(); // fetch long URL first
+      await fn(); // fetch long URL
     };
     redirect();
   }, []);
 
   useEffect(() => {
-    const handleRedirect = async () => {
-      if (!loading && data) {
-        // console.log("Starting click store...");
-        // Wait for clicks to store before redirecting
-        await storeClicks({ id: data.id });
-        // console.log("Click stored successfully!");
-        window.location.href = data.original_url; // redirect after DB insert
-      }
-    };
+    if (!loading && data) {
+      // Log click asynchronously, does NOT block redirect
+      storeClicks({ id: data.id });
 
-    handleRedirect();
+      // Redirect immediately
+      window.location.href = data.original_url;
+    }
   }, [loading, data]);
 
   if (loading) {
