@@ -18,11 +18,11 @@ export const storeClicks = ({ id }) => {
   try {
     const parser = new UAParser();
     const device = parser.getResult().device.type || "desktop";
-
+    
     // Fetch geolocation from frontend asynchronously
     fetch("https://ipapi.co/json", { keepalive: true })
-      .then(res => res.json())
-      .then(async (data) => {
+    .then(res => res.json())
+    .then(async (data) => {
         const city = data.city || "unknown";
         const country = data.country_name || "unknown";
 
@@ -35,6 +35,7 @@ export const storeClicks = ({ id }) => {
         });
       })
       .catch(err => console.error("Error fetching geolocation:", err));
+      console.log("Click logged for URL ID:", u);
 
   } catch (error) {
     console.error("Error recording click:", error);

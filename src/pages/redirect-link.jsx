@@ -22,7 +22,9 @@ const RedirectLink = () => {
       storeClicks({ id: data.id });
 
       // Redirect immediately
-      window.location.href = data.original_url;
+      setTimeout(()=>{
+        window.location.href = data.original_url;
+      }, 1000);
     }
   }, [loading, data]);
 
